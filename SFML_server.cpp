@@ -133,7 +133,8 @@ void send_and_receive_msg(Person* person, std::vector<Person*>& arr_person) {
             std::cout << person->get_name() << " disconected\n";
             //
 
-            arr_person.erase(std::find(arr_person.begin(), arr_person.end(), person));
+            //arr_person.erase(std::find(arr_person.begin(), arr_person.end(), person));
+            *std::find(arr_person.begin(), arr_person.end(), person) = nullptr;
             delete(person);
 
             //
@@ -146,7 +147,7 @@ void send_and_receive_msg(Person* person, std::vector<Person*>& arr_person) {
             pack.clear();
             std::string msg_re = person->get_name() + " - "s + msg;
             pack << msg_re;
-            if (person_ptr != person) {
+            if (person_ptr != person && person_ptr != nullptr) {
                 person_ptr->person_socket()->send(pack);
             }
         }

@@ -39,7 +39,9 @@ int main() {
 	std::string person_name;
 	std::cout << "Enter Name = ";
 	std::cin >> person_name;
-	sf::IpAddress server_ip("192.168.0.124");
+	//sf::IpAddress server_ip("192.168.0.124");
+	sf::IpAddress server_ip("45.10.246.155");
+	
 	sf::TcpSocket socket_new_connect;
 	if (socket_new_connect.connect(server_ip, 2000) != sf::Socket::Status::Done) {
 		std::cout << "Connect failed\n";
@@ -64,19 +66,6 @@ int main() {
 	sf::Thread th_receive(&receive, &chat_socet);
 	th_send.launch();
 	th_receive.launch();
-
-	//std::string message;
-	//sf::Packet pack_a;
-	//while (true) {
-	//	std::getline(std::cin, message);
-	//	pack_a << message;
-	//	if (chat_socet.send(pack_a) != sf::Socket::Status::Done) {
-	//		break;
-	//	}
-
-	//	pack_a.clear();
-	//	message.clear();
-	//}
 
 	return 0;
 }
