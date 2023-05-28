@@ -2,68 +2,64 @@
 #include <string>
 #include <vector>
 #include <numeric>
-#include <cassert>
+#include <mutex>
 #include <thread>
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
 
+using namespace std::string_literals;
+
 void send(sf::TcpSocket* chat_socet) {
-	sf::Packet pack;
-	std::string message;
 	while (true) {
+		sf::Packet pack;
+		std::string message;
+		int flag = 0;
+
 		std::getline(std::cin, message);
-		pack << message;
+		
+		if (message == ""s) continue;
+		if (message[0] == '-') {
+			flag = 1;
+		}
+		pack << flag << message;
 		if (chat_socet->send(pack) != sf::Socket::Status::Done) {
 			break;
 		}
-		pack.clear();
-		message.clear();
+		//pack.clear();
+		//message.clear();
 	}
 }
 
 void receive(sf::TcpSocket* chat_socet) {
-	sf::Packet pack;
-	std::string message;
 	while (true) {
+		sf::Packet pack;
+		std::string message;
 		if (chat_socet->receive(pack) != sf::Socket::Status::Done) {
 			break;
 		}
 		pack >> message;
-		std::cout << message <<std::endl;
-		pack.clear();
-		message.clear();
+		std::cout << std::endl << message << std::endl;
 	}
 }
 
 int main() {
-	std::string person_name;
-	std::cout << "Enter Name = ";
-	std::cin >> person_name;
-	//sf::IpAddress server_ip("192.168.0.124");
-	sf::IpAddress server_ip("45.10.246.155");
-	
+
 	sf::TcpSocket socket_new_connect;
-	if (socket_new_connect.connect(server_ip, 2000) != sf::Socket::Status::Done) {
+	sf::IpAddress server_ip("127.0.0.1");
+	//sf::IpAddress server_ip("45.10.246.155");
+	if (socket_new_connect.connect(server_ip, 3000, sf::seconds(5)) != sf::Socket::Status::Done) {
 		std::cout << "Connect failed\n";
 		return 0;
 	}
-	sf::Packet pack;
-	pack << person_name;
-	socket_new_connect.send(pack); // send name
-	pack.clear();
-	socket_new_connect.receive(pack);
-	unsigned short free_port = 0;
-	pack >> free_port; // rece port
-	socket_new_connect.disconnect();
-
-	sf::TcpSocket chat_socet;
-	if (chat_socet.connect(server_ip, free_port, sf::seconds(5)) != sf::Socket::Status::Done) {
-		std::cout << "Connect failed\n";
-		return 0;
+	else {
+		std::cout << "Connected!!! " << socket_new_connect.getLocalPort() << " " << socket_new_connect.getRemotePort() << std::endl;
 	}
-
-	sf::Thread th_send(&send, &chat_socet);
-	sf::Thread th_receive(&receive, &chat_socet);
+	//std::thread th_1(&send, &socket_new_connect);
+	//std::thread th_2(&receive, &socket_new_connect);
+	//th_1.detach();
+	//th_2.join();
+	sf::Thread th_send(&send, &socket_new_connect);
+	sf::Thread th_receive(&receive, &socket_new_connect);
 	th_send.launch();
 	th_receive.launch();
 
