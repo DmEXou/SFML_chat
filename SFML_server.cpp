@@ -15,7 +15,7 @@ public:
     void set_person_name(const std::string& name) noexcept {
         _name = name;
     }
-    
+
     std::string get_person_name() const noexcept {
         return _name;
     }
@@ -51,7 +51,7 @@ public:
         }
     }
 
-    size_t get_size() const { 
+    size_t get_size() const {
         return _socket_list.size();
     }
 
@@ -72,6 +72,7 @@ public:
     void get_msg(sf::TcpSocket& socket) {
         sf::Packet pack;
         while (true) {
+            auto port_disconnected = socket.getRemotePort();
             std::string tern_msg;
             if (socket.receive(pack) != sf::Socket::Status::Done) {
                 auto list_soc_it = std::find_if(_socket_list.begin(), _socket_list.end(), [&socket](auto& un_p_socket) {
@@ -89,7 +90,7 @@ public:
                     std::logic_error e("<<Castom Error>> Invalid erase attempt.");
                     throw(e);
                 }
-                std::cout << socket.getRemotePort() << " disconnected\n";
+                std::cout << port_disconnected << " disconnected\n";
                 break;
             }
             int type_pack;
@@ -101,7 +102,7 @@ public:
             }
             else {
                 auto person_it = std::find_if(_person_list.begin(), _person_list.end(), [&socket](auto& unq_person) {
-                        return socket.getRemotePort() == unq_person.get()->get_person_rem_port();
+                    return socket.getRemotePort() == unq_person.get()->get_person_rem_port();
                     });
                 std::string tmp_msg;
                 tern_msg += person_it->get()->get_person_name();
