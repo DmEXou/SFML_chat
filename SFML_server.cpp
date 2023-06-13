@@ -39,8 +39,8 @@ class Socket_list {
 public:
     Socket_list() {
         if (_listener.listen(3000) != sf::Socket::Status::Done) {
-            std::cout << "Error listen listener in Socket_list\n"s;
-            std::logic_error e("Error listen listener in Socket_list");
+            std::cout << "<<Castom Error>> Error listen listener in Socket_list\n"s;
+            std::logic_error e("<<Castom Error>> Error listen listener in Socket_list");
             throw(&e);
         }
     }
@@ -85,8 +85,8 @@ public:
                     _socket_list.erase(list_soc_it);
                 }
                 else {
-                    std::cout << "Invalid erase attempt.\n";
-                    std::logic_error e("Invalid erase attempt.");
+                    std::cout << "<<Castom Error>> Invalid erase attempt.\n";
+                    std::logic_error e("<<Castom Error>> Invalid erase attempt.");
                     throw(e);
                 }
                 std::cout << socket.getRemotePort() << " disconnected\n";
