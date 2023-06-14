@@ -1,2 +1,2 @@
 # SFML_chat
-g++ server.cpp -o serv -std=c++17 -lsfml-system -lsfml-network -lpthread
+g++ SFML_server.cpp -o serv -std=c++17 -lsfml-system -lsfml-network -lpthread
