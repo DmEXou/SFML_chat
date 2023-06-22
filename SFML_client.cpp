@@ -18,15 +18,19 @@ void send(sf::TcpSocket* chat_socet) {
 		std::getline(std::cin, message);
 		
 		if (message == ""s) continue;
-		if (message[0] == '-') {
+		if (message[1] == 'n') {
 			flag = 1;
 		}
+		if (message[1] == 'c'){
+			flag = 2;
+		}
+
 		pack << flag << message;
 		if (chat_socet->send(pack) != sf::Socket::Status::Done) {
 			break;
 		}
-		//pack.clear();
-		//message.clear();
+		if (flag == 2)
+			break;
 	}
 }
 
@@ -45,8 +49,8 @@ void receive(sf::TcpSocket* chat_socet) {
 int main() {
 
 	sf::TcpSocket socket_new_connect;
-	sf::IpAddress server_ip("127.0.0.1");
-	//sf::IpAddress server_ip("45.10.246.155");
+	//sf::IpAddress server_ip("127.0.0.1");
+	sf::IpAddress server_ip("45.10.246.155");
 	if (socket_new_connect.connect(server_ip, 3000, sf::seconds(5)) != sf::Socket::Status::Done) {
 		std::cout << "Connect failed\n";
 		return 0;
@@ -62,6 +66,5 @@ int main() {
 	sf::Thread th_receive(&receive, &socket_new_connect);
 	th_send.launch();
 	th_receive.launch();
-
 	return 0;
 }
