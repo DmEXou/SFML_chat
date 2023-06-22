@@ -59,14 +59,32 @@ public:
         return std::ref(_socket_list);
     }
 
-    void servis_pack(int type, const std::string& str, const sf::TcpSocket& socket) {
-        if (type == 1) { // switch
-            std::string serv = str.substr(6, str.size() - 6);
+    void servis_pack(int type, const std::string& str, sf::TcpSocket& socket) {
+	switch (type) {
+        case 1: {
+            std::string name_client = str.substr(6, str.size() - 6);
             auto person_it = std::find_if(_person_list.begin(), _person_list.end(), [&socket](auto& unq_person) {
                 return socket.getRemotePort() == unq_person.get()->get_person_rem_port();
                 });
-            person_it->get()->set_person_name(serv);
+            person_it->get()->set_person_name(name_client);
+            break;
         }
+        case 2: {
+            std::cout << "TEST CLIENT DISCONECTED!!!!" << std::endl;
+            socket.disconnect();
+       }
+        default:
+            break;
+        }
+    }
+
+    void TEST(){
+    	for(auto& a : _person_list){
+		std::cout <<"PERSON " << a.get()->get_person_rem_port() << std::endl << std::endl;
+	}
+	for(auto& a : _socket_list){
+		std::cout <<"SOCKET " << a.get()->getRemotePort() << std::endl;
+	}
     }
 
     void get_msg(sf::TcpSocket& socket) {
@@ -76,19 +94,26 @@ public:
             std::string tern_msg;
             if (socket.receive(pack) != sf::Socket::Status::Done) {
                 auto list_soc_it = std::find_if(_socket_list.begin(), _socket_list.end(), [&socket](auto& un_p_socket) {
+		    std::cout << "FIND SOCKET TEST == " << un_p_socket.get()->getRemotePort() << " - " << socket.getRemotePort() << std::endl;
                     return un_p_socket.get()->getRemotePort() == socket.getRemotePort();
                     });
                 auto list_pers_it = std::find_if(_person_list.begin(), _person_list.end(), [&socket](auto& un_p_person) {
-                    return un_p_person.get()->get_person_rem_port() == socket.getRemotePort();
+		    std::cout << "FIND PERSON TEST == " << un_p_person.get()->get_person_rem_port() << " - " << socket.getRemotePort() << std::endl;
+		    return un_p_person.get()->get_person_rem_port() == socket.getRemotePort();
                     });
-                if (list_soc_it != std::end(_socket_list) && list_pers_it != std::end(_person_list)) {
+
+		std::cout << "SOCKET " << (list_soc_it != _socket_list.end()) << " PERSON " << (list_pers_it != _person_list.end()) << std::endl;
+		std::cout << "_person_list size = " << _person_list.size() << " _socket_list size = " << _socket_list.size() << std::endl; //TMP!!!
+		TEST();
+
+                if (list_soc_it != _socket_list.end() && list_pers_it != _person_list.end()) { 
                     _person_list.erase(list_pers_it);
                     _socket_list.erase(list_soc_it);
                 }
                 else {
                     std::cout << "<<Castom Error>> Invalid erase attempt.\n";
-                    std::logic_error e("<<Castom Error>> Invalid erase attempt.");
-                    throw(e);
+                   // std::logic_error e("<<Castom Error>> Invalid erase attempt.");
+                   // throw(e);
                 }
                 std::cout << port_disconnected << " disconnected\n";
                 break;
