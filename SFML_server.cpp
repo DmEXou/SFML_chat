@@ -70,7 +70,7 @@ public:
             break;
         }
         case 2: {
-            std::cout << "TEST CLIENT DISCONECTED!!!!" << std::endl;
+            std::cout << "TEST CLIENT DISCONECTED!!!! " << socket.getRemotePort()  << std::endl;	    
             socket.disconnect();
        }
         default:
@@ -79,19 +79,45 @@ public:
     }
 
     void TEST(){
+	std::cout << "------------------------------------------------" << std::endl;
     	for(auto& a : _person_list){
-		std::cout <<"PERSON " << a.get()->get_person_rem_port() << std::endl << std::endl;
+		std::cout <<"PERSON " << a.get()->get_person_rem_port() << std::endl;
 	}
+	std::cout << std::endl;
 	for(auto& a : _socket_list){
 		std::cout <<"SOCKET " << a.get()->getRemotePort() << std::endl;
 	}
+	std::cout << "------------------------------------------------" << std::endl;
     }
 
     void get_msg(sf::TcpSocket& socket) {
         sf::Packet pack;
         while (true) {
+	    if (socket.getRemotePort() == 0){
+                auto it_s = _socket_list.begin();
+                auto it_p = _person_list.begin();
+                while (it_s != _socket_list.end()){
+                    if (it_s->get()->getRemotePort() == 0)
+                        _socket_list.erase(it_s);
+                    ++it_s;
+                }
+                while (it_p != _person_list.end()) {
+                    if (it_p->get()->get_person_rem_port() == 0){
+                        _person_list.erase(it_p);
+                    }
+                    ++it_p;
+                }
+                break;
+            }
+            if (socket.receive(pack) != sf::Socket::Status::Done) {
+                std::cout << "receive ERROR!!!!" << std::endl;
+            }
+
             auto port_disconnected = socket.getRemotePort();
             std::string tern_msg;
+
+	    /*
+
             if (socket.receive(pack) != sf::Socket::Status::Done) {
                 auto list_soc_it = std::find_if(_socket_list.begin(), _socket_list.end(), [&socket](auto& un_p_socket) {
 		    std::cout << "FIND SOCKET TEST == " << un_p_socket.get()->getRemotePort() << " - " << socket.getRemotePort() << std::endl;
@@ -118,6 +144,7 @@ public:
                 std::cout << port_disconnected << " disconnected\n";
                 break;
             }
+	    */
             int type_pack;
             pack >> type_pack;
             if (type_pack != 0) {
