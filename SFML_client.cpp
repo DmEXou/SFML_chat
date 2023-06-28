@@ -18,13 +18,13 @@ void send(sf::TcpSocket* chat_socet) {
 		std::getline(std::cin, message);
 		
 		if (message == ""s) continue;
-		if (message[1] == 'n') {
+		if (message.substr(0, 5) == std::string("-name")) {
 			flag = 1;
 		}
-		if (message[1] == 'c'){
+		if (message == std::string("-close")) {
 			flag = 2;
 		}
-		if (message[1] == 't') {
+		if (message == std::string("-test")) {
 			flag = 3;
 		}
 		

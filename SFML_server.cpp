@@ -75,9 +75,11 @@ public:
                 });
             std::cout << "Person " << person_it->get()->get_person_name() << " disconnected" << std::endl;
             socket.disconnect();
+            break;
        }
         case 3: {
             test_lists();
+            break;
         }
         default:
             break;
@@ -85,15 +87,16 @@ public:
     }
 
     void test_lists(){
-	std::cout << "------------------------------------------------" << std::endl;
-    	for(auto& a : _person_list){
-		std::cout <<"PERSON " << a.get()->get_person_rem_port() << std::endl;
-	}
-	std::cout << std::endl;
-	for(auto& a : _socket_list){
-		std::cout <<"SOCKET " << a.get()->getRemotePort() << std::endl;
-	}
-	std::cout << "------------------------------------------------" << std::endl;
+	    std::cout << "------------------------------------------------" << std::endl;
+        std::cout << "Person list size = " << _person_list.size() << " Socet list size = " << _socket_list.size() << std::endl;
+    	for(auto& a : _person_list) {
+		    std::cout <<"PERSON " << a.get()->get_person_rem_port() << std::endl;
+	    }
+	    std::cout << std::endl;
+        for (auto& a : _socket_list) {
+            std::cout << "SOCKET " << a.get()->getRemotePort() << std::endl;
+        }
+	    std::cout << "------------------------------------------------" << std::endl;
     }
 
     void get_msg(sf::TcpSocket& socket) {
