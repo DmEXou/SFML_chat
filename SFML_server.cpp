@@ -98,12 +98,12 @@ public:
                 auto it_p = _person_list.begin();
                 while (it_s != _socket_list.end()){
                     if (it_s->get()->getRemotePort() == 0)
-                        _socket_list.erase(it_s);
+                        it_s = _socket_list.erase(it_s);
                     ++it_s;
                 }
                 while (it_p != _person_list.end()) {
                     if (it_p->get()->get_person_rem_port() == 0){
-                        _person_list.erase(it_p);
+                        it_p = _person_list.erase(it_p);
                     }
                     ++it_p;
                 }
