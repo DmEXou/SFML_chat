@@ -70,15 +70,21 @@ public:
             break;
         }
         case 2: {
-            std::cout << "TEST CLIENT DISCONECTED!!!! " << socket.getRemotePort()  << std::endl;	    
+            auto person_it = std::find_if(_person_list.begin(), _person_list.end(), [&socket](auto& unq_person) {
+                return socket.getRemotePort() == unq_person.get()->get_person_rem_port();
+                });
+            std::cout << "Person " << person_it->get()->get_person_name() << " disconnected" << std::endl;
             socket.disconnect();
        }
+        case 3: {
+            test_lists();
+        }
         default:
             break;
         }
     }
 
-    void TEST(){
+    void test_lists(){
 	std::cout << "------------------------------------------------" << std::endl;
     	for(auto& a : _person_list){
 		std::cout <<"PERSON " << a.get()->get_person_rem_port() << std::endl;
@@ -111,7 +117,7 @@ public:
             }
             if (socket.receive(pack) != sf::Socket::Status::Done) {
                 std::cout << "<<Castom Error>> Receive error." << std::endl;
-		break;
+		        break;
             }
 
             auto port_disconnected = socket.getRemotePort();

@@ -24,7 +24,10 @@ void send(sf::TcpSocket* chat_socet) {
 		if (message[1] == 'c'){
 			flag = 2;
 		}
-
+		if (message[1] == 't') {
+			flag = 3;
+		}
+		
 		pack << flag << message;
 		if (chat_socet->send(pack) != sf::Socket::Status::Done) {
 			break;
