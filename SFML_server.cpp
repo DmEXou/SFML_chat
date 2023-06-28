@@ -110,7 +110,8 @@ public:
                 break;
             }
             if (socket.receive(pack) != sf::Socket::Status::Done) {
-                std::cout << "receive ERROR!!!!" << std::endl;
+                std::cout << "<<Castom Error>> Receive error." << std::endl;
+		break;
             }
 
             auto port_disconnected = socket.getRemotePort();
