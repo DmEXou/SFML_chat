@@ -86,35 +86,43 @@ public:
         }
     }
 
-    void test_lists(){
-	    std::cout << "------------------------------------------------" << std::endl;
+    void eraise_person_list() {
+        auto it_p = _person_list.begin();
+        while (it_p != _person_list.end()) {
+            int a = std::count_if(_socket_list.begin(), _socket_list.end(), [&it_p](const auto& it_s) {
+                return (it_s->getRemotePort() == it_p->get()->get_person_rem_port());
+                });
+            if (a == 0) {
+                it_p = _person_list.erase(it_p);
+            }
+            else {
+                ++it_p;
+            }
+        }
+    }
+
+    void test_lists() {
+        std::cout << "------------------------------------------------" << std::endl;
         std::cout << "Person list size = " << _person_list.size() << " Socet list size = " << _socket_list.size() << std::endl;
-    	for(auto& a : _person_list) {
-		    std::cout <<"PERSON " << a.get()->get_person_rem_port() << std::endl;
+        for(auto& a : _person_list) {
+            std::cout <<"PERSON " << a.get()->get_person_rem_port() << std::endl;
 	    }
-	    std::cout << std::endl;
+        std::cout << std::endl;
         for (auto& a : _socket_list) {
             std::cout << "SOCKET " << a.get()->getRemotePort() << std::endl;
         }
-	    std::cout << "------------------------------------------------" << std::endl;
+        std::cout << "------------------------------------------------" << std::endl;
     }
 
     void get_msg(sf::TcpSocket& socket) {
         sf::Packet pack;
         while (true) {
 	    if (socket.getRemotePort() == 0){
-                auto it_s = _socket_list.begin();
-                auto it_p = _person_list.begin();
+                auto it_s = ++_socket_list.begin();
                 while (it_s != _socket_list.end()){
                     if (it_s->get()->getRemotePort() == 0)
                         it_s = _socket_list.erase(it_s);
                     ++it_s;
-                }
-                while (it_p != _person_list.end()) {
-                    if (it_p->get()->get_person_rem_port() == 0){
-                        it_p = _person_list.erase(it_p);
-                    }
-                    ++it_p;
                 }
                 break;
             }
@@ -134,7 +142,7 @@ public:
                 servis_pack(type_pack, str, socket);
             }
             else {
-                auto person_it = std::find_if(_person_list.begin(), _person_list.end(), [&socket](auto& unq_person) {
+                auto person_it = std::find_if(_person_list.begin(), _person_list.end(), [&socket](const auto& unq_person) {
                     return socket.getRemotePort() == unq_person.get()->get_person_rem_port();
                     });
                 std::string tmp_msg;
@@ -191,6 +199,11 @@ int main() {
         std::cin >> str;
         if (str == "quit"s) {
             return 0;
+        }
+        if (str == "test_list"s) {
+            list.test_lists();
+            list.eraise_person_list();
+            list.test_lists();
         }
     }
     return 0;
