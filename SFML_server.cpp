@@ -118,9 +118,9 @@ public:
         sf::Packet pack;
         while (true) {
 	        if (socket.getRemotePort() == 0) {
-                auto it_s = ++_socket_list.begin();
+                auto it_s = _socket_list.begin();
                 while (it_s != _socket_list.end()){
-                    if (it_s->get()->getRemotePort() == 0)
+                    if (it_s->get()->getRemotePort() == 0 && it_s != --_socket_list.end())
                         it_s = _socket_list.erase(it_s);
                     else
                         ++it_s;
