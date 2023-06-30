@@ -101,6 +101,16 @@ public:
         }
     }
 
+    void eraise_socket_list() {
+        auto it_s = _socket_list.begin();
+        while (it_s != _socket_list.end()) {
+            if (it_s->get()->getRemotePort() == 0 && it_s != --_socket_list.end())
+                it_s = _socket_list.erase(it_s);
+            else
+                ++it_s;
+        }
+    }
+
     void test_lists() {
         std::cout << "------------------------------------------------" << std::endl;
         std::cout << "Person list size = " << _person_list.size() << " Socet list size = " << _socket_list.size() << std::endl;
@@ -117,18 +127,9 @@ public:
     void get_msg(sf::TcpSocket& socket) {
         sf::Packet pack;
         while (true) {
-	        if (socket.getRemotePort() == 0) {
-                auto it_s = _socket_list.begin();
-                while (it_s != _socket_list.end()){
-                    if (it_s->get()->getRemotePort() == 0 && it_s != --_socket_list.end())
-                        it_s = _socket_list.erase(it_s);
-                    else
-                        ++it_s;
-                }
-                break;
-            }
-            if (socket.receive(pack) != sf::Socket::Status::Done) {
-                std::cout << "<<Castom Error>> Receive error." << std::endl;
+            if (socket.receive(pack) != sf::Socket::Status::Done || socket.getRemotePort() == 0) {
+                eraise_socket_list();
+                eraise_person_list();
 		        break;
             }
 
@@ -202,8 +203,6 @@ int main() {
             return 0;
         }
         if (str == "test_list"s) {
-            list.test_lists();
-            list.eraise_person_list();
             list.test_lists();
         }
     }
